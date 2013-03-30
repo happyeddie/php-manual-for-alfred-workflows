@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>douban.lucifr.com</string>
+	<key>connections</key>
+	<dict>
+		<key>4E86472A-FB8F-4F64-975F-785BF66B9F08</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>AEDC9808-CFE7-4D16-80B6-B4D033A79E68</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+		<key>67BE2A80-D1E6-4A47-B82A-E140CBA759A0</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>AEDC9808-CFE7-4D16-80B6-B4D033A79E68</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+		<key>C5C34466-B858-4F14-BF5E-FD05FA0903DA</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>AEDC9808-CFE7-4D16-80B6-B4D033A79E68</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Lucifr</string>
+	<key>description</key>
+	<string>搜索豆瓣书籍、电影、音乐</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Douban</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>plusspaces</key>
+				<false/>
+				<key>url</key>
+				<string>{query}</string>
+				<key>utf8</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>AEDC9808-CFE7-4D16-80B6-B4D033A79E68</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>63</integer>
+				<key>keyword</key>
+				<string>music</string>
+				<key>runningsubtext</key>
+				<string>请稍等</string>
+				<key>script</key>
+				<string>require_once('workflows.php');
+$w = new Workflows();
+$query = urlencode( "{query}" );
+$api = "01068bdd0c3168a70313a397249439f5";
+$url = "https://api.douban.com/v2/music/search?count=20&amp;apikey=$api&amp;q=$query";
+$suggestions = $w-&gt;request( $url );
+$suggestions = json_decode( $suggestions );
+function get_name($i) {
+   return $i-&gt;name;
+}
+foreach( $suggestions-&gt;musics as $suggest ):
+   $w-&gt;result( $suggest-&gt;id, $suggest-&gt;alt, $suggest-&gt;title, '表演者: '. implode(",", $suggest-&gt;attrs-&gt;singer) .' 评分: '. $suggest-&gt;rating-&gt;average .'/'. $suggest-&gt;rating-&gt;numRaters .' 标签: '. implode(",", array_map('get_name', $suggest-&gt;tags)), '67BE2A80-D1E6-4A47-B82A-E140CBA759A0.png' );
+endforeach;
+
+if ( count( $w-&gt;results() ) == 0 ):
+         $w-&gt;result( 'dobanmusic', 'http://music.douban.com/subject_search?search_text='. $query, '糟糕...', '没找到符合条件的音乐, 去豆瓣搜搜看？', 'icon.png', 'yes' );
+endif;   
+
+echo $w-&gt;toxml();</string>
+				<key>subtext</key>
+				<string>请输入唱片名</string>
+				<key>title</key>
+				<string>搜索豆瓣音乐</string>
+				<key>type</key>
+				<integer>1</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>67BE2A80-D1E6-4A47-B82A-E140CBA759A0</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>63</integer>
+				<key>keyword</key>
+				<string>book</string>
+				<key>runningsubtext</key>
+				<string>请等待</string>
+				<key>script</key>
+				<string>require_once('workflows.php');
+$w = new Workflows();
+$query = urlencode( "{query}" );
+$api = "01068bdd0c3168a70313a397249439f5";
+$url = "https://api.douban.com/v2/book/search?count=20&amp;apikey=$api&amp;q=$query";
+$suggestions = $w-&gt;request( $url );
+$suggestions = json_decode( $suggestions );
+function get_name($i) {
+   return $i-&gt;name;
+}
+foreach( $suggestions-&gt;books as $suggest ):
+	$w-&gt;result( $suggest-&gt;id, $suggest-&gt;alt, $suggest-&gt;title, '作者: '. implode(",", $suggest-&gt;author) .' 评分: '. $suggest-&gt;rating-&gt;average .'/'. $suggest-&gt;rating-&gt;numRaters .' 标签: '. implode(",", array_map('get_name', $suggest-&gt;tags)), 'C5C34466-B858-4F14-BF5E-FD05FA0903DA.png' );
+endforeach;
+
+if ( count( $w-&gt;results() ) == 0 ):
+      	$w-&gt;result( 'dobanbook', 'http://book.douban.com/subject_search?search_text='. $query, '糟糕…', '没找到符合条件的书籍, 去豆瓣搜搜看？', 'icon.png', 'yes' );
+endif;	
+
+echo $w-&gt;toxml();</string>
+				<key>subtext</key>
+				<string>请输入书名</string>
+				<key>title</key>
+				<string>搜索豆瓣读书</string>
+				<key>type</key>
+				<integer>1</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>C5C34466-B858-4F14-BF5E-FD05FA0903DA</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>63</integer>
+				<key>keyword</key>
+				<string>movie</string>
+				<key>runningsubtext</key>
+				<string>请稍等</string>
+				<key>script</key>
+				<string>require_once('workflows.php');
+$w = new Workflows();
+$query = urlencode( "{query}" );
+$api = "01068bdd0c3168a70313a397249439f5";
+$url = "https://api.douban.com/v2/movie/search?count=20&amp;apikey=$api&amp;q=$query";
+$suggestions = $w-&gt;request( $url );
+$suggestions = json_decode( $suggestions );
+foreach( $suggestions-&gt;subjects as $suggest ):
+	$w-&gt;result( $suggest-&gt;id, $suggest-&gt;alt, $suggest-&gt;title, '年份: '. $suggest-&gt;year .' 评分: '. $suggest-&gt;rating-&gt;average .' 类型: '. $suggest-&gt;subtype .' 别名: '. $suggest-&gt;original_title, '4E86472A-FB8F-4F64-975F-785BF66B9F08.png' );
+endforeach;
+
+if ( count( $w-&gt;results() ) == 0 ):
+      	$w-&gt;result( 'dobanmusic', 'http://movie.douban.com/subject_search?search_text='. $query, '糟糕...', '没找到符合条件的电影, 去豆瓣搜搜看？', 'icon.png', 'yes' );
+endif;	
+
+echo $w-&gt;toxml();</string>
+				<key>subtext</key>
+				<string>请输入影片名</string>
+				<key>title</key>
+				<string>搜索豆瓣电影</string>
+				<key>type</key>
+				<integer>1</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>4E86472A-FB8F-4F64-975F-785BF66B9F08</string>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string></string>
+	<key>uidata</key>
+	<dict>
+		<key>4E86472A-FB8F-4F64-975F-785BF66B9F08</key>
+		<dict>
+			<key>ypos</key>
+			<real>250</real>
+		</dict>
+		<key>67BE2A80-D1E6-4A47-B82A-E140CBA759A0</key>
+		<dict>
+			<key>ypos</key>
+			<real>130</real>
+		</dict>
+		<key>AEDC9808-CFE7-4D16-80B6-B4D033A79E68</key>
+		<dict>
+			<key>ypos</key>
+			<real>130</real>
+		</dict>
+		<key>C5C34466-B858-4F14-BF5E-FD05FA0903DA</key>
+		<dict>
+			<key>ypos</key>
+			<real>10</real>
+		</dict>
+	</dict>
+	<key>webaddress</key>
+	<string>http://lucifr.com</string>
+</dict>
+</plist>
